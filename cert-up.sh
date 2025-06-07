@@ -53,7 +53,7 @@ generateCrt () {
   INSTALL_ECC=""
   ECC_SUBDIR=""
   if [ "${USE_ECC}" = "yes" ]; then
-    KEY_MODE="--keylength ec"
+    KEY_MODE="--keylength ec-256"
     INSTALL_ECC="--ecc"
     ECC_SUBDIR="_ecc"
   fi
