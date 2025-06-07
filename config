@@ -12,6 +12,13 @@ export DNS_SLEEP=120
 export Ali_Key="LTqIA87hOKdjevsf5"
 export Ali_Secret="0p5EYueFNq501xnCPzKNbx6K51qPH2"
 
+# Cloudflare DNS=dns_cf
+# 令牌模式
+export CF_Token="1e5g********************gPtrlWt"
+# 密钥+邮箱模式
+#export CF_Key="abc***********123"
+#export CF_Email="alice@example.com"
+
 # Dnspod DNS=dns_dp
 export DP_Id="1234"
 export DP_Key="sADDsdasdgdsf"
