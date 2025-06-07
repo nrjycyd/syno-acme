@@ -44,24 +44,37 @@ installAcme () {
 
 generateCrt () {
   echo 'begin generateCrt'
-  cd ${BASE_ROOT}
+  cd "${BASE_ROOT}"
   source config
-  echo 'begin updating default cert by acme.sh tool'
-  source ${ACME_BIN_PATH}/acme.sh.env
-  ${ACME_BIN_PATH}/acme.sh --force --log --issue --dns ${DNS} --dnssleep ${DNS_SLEEP} -d "${DOMAIN}" -d "*.${DOMAIN}"
-  ${ACME_BIN_PATH}/acme.sh --force --installcert -d ${DOMAIN} -d *.${DOMAIN} \
-    --certpath ${CRT_PATH}/cert.pem \
-    --key-file ${CRT_PATH}/privkey.pem \
-    --fullchain-file ${CRT_PATH}/fullchain.pem
+  source "${ACME_BIN_PATH}/acme.sh.env"
+
+  # 判断 ECC 模式
+  KEY_MODE=""
+  INSTALL_ECC=""
+  ECC_SUBDIR=""
+  if [ "${USE_ECC}" = "yes" ]; then
+    KEY_MODE="--keylength ec"
+    INSTALL_ECC="--ecc"
+    ECC_SUBDIR="_ecc"
+  fi
+
+  echo "[INFO] issuing cert for domain: ${DOMAIN} (${USE_ECC:-no ECC})"
+  ${ACME_BIN_PATH}/acme.sh --force --log --issue --dns "${DNS}" --dnssleep "${DNS_SLEEP}" ${KEY_MODE} -d "${DOMAIN}" -d "*.${DOMAIN}"
+
+  echo "[INFO] installing cert to ${CRT_PATH}"
+  ${ACME_BIN_PATH}/acme.sh --force --installcert ${INSTALL_ECC} -d "${DOMAIN}" -d "*.${DOMAIN}" \
+    --certpath "${CRT_PATH}/cert.pem" \
+    --key-file "${CRT_PATH}/privkey.pem" \
+    --fullchain-file "${CRT_PATH}/fullchain.pem"
 
   if [ -s "${CRT_PATH}/cert.pem" ]; then
     echo 'done generateCrt'
     return 0
   else
     echo '[ERR] fail to generateCrt'
-    echo "begin revert"
+    echo 'begin revert'
     revertCrt
-    exit 1;
+    exit 1
   fi
 }
 
